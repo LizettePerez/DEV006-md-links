@@ -1,25 +1,35 @@
+const { resolve } = require('path');
 const { 
   isAbsolute,
   filePath,
   relativeToAbsolute,
+  exist,
 } = require('./index');
 
 
 const mdLinks = (path, option) => {
   return new Promise((resolve, reject) => {
+    let absolutePath;
     if (isAbsolute(path)) {
-      resolve('La ruta es absoluta');
+      absolutePath = path;
     } else {
-      const absolutePath = relativeToAbsolute(path);
-      reject(absolutePath);
+      absolutePath = relativeToAbsolute(path);
     }
-  })
-}
+    exist(absolutePath)
+      .then(() => {
+        resolve('ruta existe');
+      })
+      .catch(() => {
+        reject('ruta NO existe');
+      });
+  });
+};
+
 
 mdLinks(filePath).then((result) => {
   console.log(result);
 }).catch((err) => {
-  console.log('Ruta convertida a absoluta: >>>', err);
+  console.log(err);
 });
 
 
