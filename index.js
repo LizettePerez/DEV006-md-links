@@ -23,9 +23,6 @@ const exist = (route) => {
   });
 };
 
-// const exist = (route) => {
-//   return fs.existsSync(route);
-// };
 
 module.exports = {
   isAbsolute,
