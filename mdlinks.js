@@ -22,6 +22,12 @@ const mdLinks = (path, option) => {
       .catch(() => {
         reject('ruta NO existe');
       });
+
+      // if (exist(absolutePath)) {
+      //   resolve('La ruta existe');
+      // } else {
+      //   reject(new Error('La ruta no existe'));
+      // }
   });
 };
 
