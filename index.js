@@ -59,7 +59,8 @@ const checkFileType = (route) => {
             } else {
               // filtrar si es md
               const filteredFiles = files.filter((file) => path.extname(file) === '.md');
-              resolve(filteredFiles);
+              // si no hay archivos .md, rechazar la promesa
+              filteredFiles.length === 0 ? reject(false) : resolve(filteredFiles);
             }
           });
         }

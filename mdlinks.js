@@ -45,3 +45,9 @@ mdLinks(filePath)
 // node mdlinks.js index.js
 // node mdlinks.js index.js12
 // node mdlinks.js README.md
+
+// CONTIENE MD
+// node mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-data-lovers
+
+// NO CONTIENE MD
+// node mdlinks.js C:/Users/x_liz/Documents/GitHub/Challenge-Oracle-One
