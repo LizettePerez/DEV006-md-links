@@ -1,37 +1,47 @@
-const { resolve } = require('path');
 const { 
   isAbsolute,
   filePath,
   relativeToAbsolute,
   exist,
+  checkFileType,
 } = require('./index');
 
 
 const mdLinks = (path, option) => {
   return new Promise((resolve, reject) => {
+    // ruta absoluta
     let absolutePath;
-    if (isAbsolute(path)) {
-      absolutePath = path;
-    } else {
-      absolutePath = relativeToAbsolute(path);
-    }
+    absolutePath = isAbsolute(path) ? path : relativeToAbsolute(path);
+
+    //ruta existente
     exist(absolutePath)
       .then(() => {
-        resolve('ruta existe');
+        // Verificar archivo md
+        checkFileType(absolutePath)
+          .then(() => {
+            resolve('El archivo SI es de tipo .md');
+          }).catch(() => {
+            reject('El archivo No es Markdown')
+          });
       })
       .catch(() => {
-        reject('ruta NO existe');
+        reject('La ruta no es válida');
       });
+
   });
 };
 
 
-mdLinks(filePath).then((result) => {
-  console.log(result);
-}).catch((err) => {
-  console.log(err);
+mdLinks(filePath)
+  .then((result) => {
+    console.log(result);
+  })
+  .catch((err) => {
+    console.log(err);
 });
 
 
 // node mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/index.js
 // node mdlinks.js index.js
+// node mdlinks.js index.js12
+// node mdlinks.js README.md
