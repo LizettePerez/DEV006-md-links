@@ -1,7 +1,10 @@
 const path = require('path');
 const fs = require('fs');
+const fetch = require('node-fetch');
+
 
 const filePath = process.argv[2];
+const fileValidation = process.argv[3];
 
 const isAbsolute = (route) => {
   return path.isAbsolute(route)
@@ -11,7 +14,7 @@ const relativeToAbsolute = (route) => {
   return path.resolve(route)
 };
 
-const exist = (route) => {
+const existPath = (route) => {
   return new Promise((resolve, reject) => {
     fs.stat(route, (err, stats) => {
       err ? reject(false) : resolve(true);
@@ -19,42 +22,66 @@ const exist = (route) => {
   });
 };
 
-
-const checkFileType = (route) => {
+const isFileMD = (route) => {
   return new Promise((resolve, reject) => {
     fs.stat(route, (err, stats) => {
       if (err) {
         reject(err);
-      } else {
-        // si es un archivo
-        if (stats.isFile()) {
-          const fileExtension = path.extname(route);
-          // filtrar si es md
-          fileExtension === '.md' ? resolve(true) : reject(false);
-          // si es un directorio
-        } else if (stats.isDirectory()) {
-          fs.readdir(route, (err, files) => {
-            if (err) {
-              reject(err);
-            } else {
-              // filtrar si es md
-              const filteredFiles = files.filter((file) => path.extname(file) === '.md');
-              // si no hay archivos .md, rechazar la promesa
-              filteredFiles.length === 0 ? reject(false) : resolve(filteredFiles);
-            }
-          });
-        }
+      } else if (stats.isFile()) {
+        const fileExtension = path.extname(route);
+        fileExtension === '.md' ? resolve(fileExtension) : reject('El archivo no es Markdown');
+      } else if (stats.isDirectory()) {
+        resolve(false);
       }
-    })
-  })
+    });
+  });
 };
 
+const getFilesMD = (route, filePath) => {
+  return new Promise((resolve, reject) => {
+    fs.readdir(route, (err, files) => {
+      if (err) {
+        reject(err);
+      } else {
+        const filteredFiles = files.filter((file) => path.extname(file) === '.md');
+        filteredFiles.length === 0 ? reject(false) : resolve(filteredFiles.map(file => path.join(filePath, file)));
+      }
+    });
+  });
+};
+
+const hasLinks = (route) => {
+  return new Promise((resolve, reject) => {
+    fs.readFile(route, 'utf8', (err, data) => {
+      if (err) {
+        reject(err);
+      } else {
+        const linkRegex = /\[(.*)\]\((https?:\/\/[\w\d./?=#]+)\)/g;
+
+        const matches = [...data.matchAll(linkRegex)];
+        const links = matches.map((match) => {
+          const [, text, href] = match;
+          return { file: href, text, route };
+        });
+
+        if (links.length > 0) {
+          resolve(links);
+        } else {
+          reject(`El archivo ${route} no contiene enlaces`);
+        }
+      }
+    });
+  });
+};
 
 
 module.exports = {
   isAbsolute,
   filePath,
   relativeToAbsolute,
-  exist,
-  checkFileType,
+  existPath,
+  isFileMD,
+  getFilesMD,
+  hasLinks,
+  fileValidation,
 }
