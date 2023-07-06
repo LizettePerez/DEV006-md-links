@@ -19,26 +19,6 @@ const exist = (route) => {
   });
 };
 
-// const contentDirectory = (route) => {
-//   return new Promise((resolve, reject) => {
-//     fs.readdir(route, (err, files) => {
-//       err ? reject(err) : resolve(files)
-//     });
-//   });
-// };
-
-// const filterContentDirectory = (route) => {
-//   return new Promise((resolve, reject) => {
-//     fs.readdir(route, (err, files) => {
-//       if (err) {
-//         reject(err);
-//       } else {
-//         const filteredFiles = files.filter((file) => path.extname(file) === '.md');
-//         resolve(filteredFiles);
-//       }
-//     });
-//   });
-// }
 
 const checkFileType = (route) => {
   return new Promise((resolve, reject) => {
