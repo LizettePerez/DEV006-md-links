@@ -1,6 +1,5 @@
 const path = require('path');
 const fs = require('fs');
-const fetch = require('node-fetch');
 
 
 const filePath = process.argv[2];
