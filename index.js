@@ -49,6 +49,7 @@ const getFilesMD = (route, filePath) => {
   });
 };
 
+
 const thereAreLinks = (route) => {
   return new Promise((resolve, reject) => {
     fs.readFile(route, 'utf8', (err, data) => {
@@ -59,8 +60,8 @@ const thereAreLinks = (route) => {
 
         const matches = [...data.matchAll(linkRegex)];
         const links = matches.map((match) => {
-          const [, text, href] = match;
-          return { file: href, text, route };
+          const [text, href] = match.slice(1);
+          return { href, text, file: route }; 
         });
 
         if (links.length > 0) {
@@ -73,11 +74,33 @@ const thereAreLinks = (route) => {
   });
 };
 
+
 const validateLink = (link) => {
   return new Promise((resolve, reject) => {
-
+    axios.get(link.href) 
+      .then((response) => {
+        const result = {
+          href: link.href,
+          text: link.text,
+          file: link.file,
+          status: response.status,
+          ok: response.statusText
+        };
+        resolve(result);
+      })
+      .catch((error) => {
+        const result = {
+          href: link.href,
+          text: link.text,
+          file: link.file,
+          status: error.response.status,
+          ok: 'fail'
+        };
+        resolve(result);
+      });
   });
 };
+
 
 module.exports = {
   isAbsolute,
@@ -88,4 +111,8 @@ module.exports = {
   getFilesMD,
   thereAreLinks,
   fileValidation,
+  validateLink,
 }
+
+
+

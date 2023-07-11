@@ -7,6 +7,7 @@ const {
   getFilesMD,
   thereAreLinks,
   fileValidation,
+  validateLink,
 } = require('./index');
 
 
@@ -29,8 +30,25 @@ const mdLinks = (path, option) => {
           .then((fileExtension) => {
             if (fileExtension === '.md') {
               thereAreLinks(absolutePath)
-                .then((result) => {
-                  resolve(result)
+                .then((links) => {
+                  if (
+                    option === 'validate' ||
+                    option === 'v' ||
+                    option === 'Validate' ||
+                    option === 'VALIDATE'
+                  ) {
+                    const linkPromises = links.map((link) => {
+                      return validateLink(link);
+                    });
+                    Promise.all(linkPromises)
+                      .then((result) => {
+                        resolve(result);
+                      }).catch((err) => {
+                        reject(err);
+                      });
+                  } else {
+                    resolve(links);
+                  }
                 }).catch((err) => {
                   reject(err)
                 });
@@ -40,7 +58,20 @@ const mdLinks = (path, option) => {
                 .then((mdFiles) => {
                   // Leer contenido md y verificar enlaces
                   const promises = mdFiles.map((file) => {
-                    return thereAreLinks(file);
+                    return thereAreLinks(file).then((links) => {
+                      if (
+                        option === 'validate' ||
+                        option === 'v' ||
+                        option === 'Validate' ||
+                        option === 'VALIDATE'
+                      ) { const linkPromises = links.map((link) => {
+                        return validateLink(link);
+                      });
+                      return Promise.all(linkPromises);
+                    } else {
+                      resolve(links);
+                    }
+                    });
                   });
                   Promise.all(promises)
                     .then((result) => {
@@ -48,11 +79,11 @@ const mdLinks = (path, option) => {
                     }).catch((err) => {
                       reject(err);
                     });
-                }).catch((err) => {
+                }).catch(() => {
                   reject('El directorio no contiene archivos Markdown')
                 });
             }
-          }).catch((err) => {
+          }).catch(() => {
             reject('El archivo no es Markdown')
           });
       })
