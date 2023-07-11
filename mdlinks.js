@@ -34,6 +34,7 @@ const mdLinks = (path, option) => {
                   if (
                     option === 'validate' ||
                     option === 'v' ||
+                    option === 'V' ||
                     option === 'Validate' ||
                     option === 'VALIDATE'
                   ) {
@@ -43,48 +44,59 @@ const mdLinks = (path, option) => {
                     Promise.all(linkPromises)
                       .then((result) => {
                         resolve(result);
-                      }).catch((err) => {
+                      })
+                      .catch((err) => {
                         reject(err);
                       });
                   } else {
                     resolve(links);
                   }
-                }).catch((err) => {
-                  reject(err)
+                })
+                .catch((err) => {
+                  reject(err);
                 });
             } else {
               // Es un directorio, obtener archivos .md
-              getFilesMD(absolutePath, filePath)
+              getFilesMD(absolutePath, path)
                 .then((mdFiles) => {
-                  // Leer contenido md y verificar enlaces
                   const promises = mdFiles.map((file) => {
-                    return thereAreLinks(file).then((links) => {
-                      if (
-                        option === 'validate' ||
-                        option === 'v' ||
-                        option === 'Validate' ||
-                        option === 'VALIDATE'
-                      ) { const linkPromises = links.map((link) => {
-                        return validateLink(link);
+                    return thereAreLinks(file)
+                      .then((links) => {
+                        if (
+                          option === 'validate' ||
+                          option === 'v' ||
+                          option === 'V' ||
+                          option === 'Validate' ||
+                          option === 'VALIDATE'
+                        ) {
+                          const linkPromises = links.map((link) => {
+                            return validateLink(link);
+                          });
+                          return Promise.all(linkPromises);
+                        } else {
+                          return links;
+                        }
+                      })
+                      .catch((err) => {
+                        return [];
                       });
-                      return Promise.all(linkPromises);
-                    } else {
-                      resolve(links);
-                    }
-                    });
                   });
                   Promise.all(promises)
                     .then((result) => {
-                      resolve(result);
-                    }).catch((err) => {
+                      const allLinks = result.flat();
+                      resolve(allLinks);
+                    })
+                    .catch((err) => {
                       reject(err);
                     });
-                }).catch(() => {
-                  reject('El directorio no contiene archivos Markdown')
+                })
+                .catch((err) => {
+                  reject('El directorio no contiene archivos Markdown');
                 });
             }
-          }).catch(() => {
-            reject('El archivo no es Markdown')
+          })
+          .catch(() => {
+            reject('El archivo no es Markdown');
           });
       })
       .catch(() => {
@@ -92,7 +104,6 @@ const mdLinks = (path, option) => {
       });
   });
 };
-
 
 mdLinks(filePath, fileValidation)
   .then((result) => {
@@ -103,10 +114,12 @@ mdLinks(filePath, fileValidation)
   });
 
 
+// node mdlinks.js
 // node mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/index.js
 // node mdlinks.js index.js
 // node mdlinks.js index.js12
 // node mdlinks.js README.md
+// node mdlinks.js test.md
 
 // CONTIENE MD
 // node mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/
