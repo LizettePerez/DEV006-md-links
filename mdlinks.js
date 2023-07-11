@@ -5,7 +5,7 @@ const {
   existPath,
   isFileMD,
   getFilesMD,
-  hasLinks,
+  thereAreLinks,
   fileValidation,
 } = require('./index');
 
@@ -28,7 +28,7 @@ const mdLinks = (path, option) => {
         isFileMD(absolutePath)
           .then((fileExtension) => {
             if (fileExtension === '.md') {
-              hasLinks(absolutePath)
+              thereAreLinks(absolutePath)
                 .then((result) => {
                   resolve(result)
                 }).catch((err) => {
@@ -40,7 +40,7 @@ const mdLinks = (path, option) => {
                 .then((mdFiles) => {
                   // Leer contenido md y verificar enlaces
                   const promises = mdFiles.map((file) => {
-                    return hasLinks(file);
+                    return thereAreLinks(file);
                   });
                   Promise.all(promises)
                     .then((result) => {
@@ -63,7 +63,7 @@ const mdLinks = (path, option) => {
 };
 
 
-mdLinks(filePath)
+mdLinks(filePath, fileValidation)
   .then((result) => {
     console.log(result);
   })
@@ -78,7 +78,7 @@ mdLinks(filePath)
 // node mdlinks.js README.md
 
 // CONTIENE MD
-// node mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-data-lovers
+// node mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/
 
 // NO CONTIENE MD
 // node mdlinks.js C:/Users/x_liz/Documents/GitHub/Challenge-Oracle-One

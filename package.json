@@ -10,6 +10,7 @@
     "commit": "6de8e2f7e38d779fd6845c63477977fb1eb3af99"
   },
   "dependencies": {
+    "axios": "^1.4.0",
     "node-fetch": "^3.3.1"
   }
 }

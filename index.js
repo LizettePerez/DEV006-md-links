@@ -1,6 +1,6 @@
 const path = require('path');
 const fs = require('fs');
-
+const axios = require('axios');
 
 const filePath = process.argv[2];
 const fileValidation = process.argv[3];
@@ -49,7 +49,7 @@ const getFilesMD = (route, filePath) => {
   });
 };
 
-const hasLinks = (route) => {
+const thereAreLinks = (route) => {
   return new Promise((resolve, reject) => {
     fs.readFile(route, 'utf8', (err, data) => {
       if (err) {
@@ -73,6 +73,11 @@ const hasLinks = (route) => {
   });
 };
 
+const validateLink = (link) => {
+  return new Promise((resolve, reject) => {
+
+  });
+};
 
 module.exports = {
   isAbsolute,
@@ -81,6 +86,6 @@ module.exports = {
   existPath,
   isFileMD,
   getFilesMD,
-  hasLinks,
+  thereAreLinks,
   fileValidation,
 }
