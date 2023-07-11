@@ -57,7 +57,7 @@ const mdLinks = (path, option) => {
                 });
             } else {
               // Es un directorio, obtener archivos .md
-              getFilesMD(absolutePath, path)
+              getFilesMD(absolutePath, absolutePath)
                 .then((mdFiles) => {
                   const promises = mdFiles.map((file) => {
                     return thereAreLinks(file)
@@ -113,6 +113,7 @@ mdLinks(filePath, fileValidation)
     console.log(err);
   });
 
+  module.exports = mdLinks;
 
 // node mdlinks.js
 // node mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/index.js
