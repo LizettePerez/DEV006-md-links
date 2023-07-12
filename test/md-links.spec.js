@@ -187,14 +187,127 @@ describe('isFileMD index.js', () => {
 });
 
 
-// describe('getFilesMD index.js', () => {
-//   it('Debe resolver con la lista de archivos Markdown dentro del directorio', () => {
-//     const path = 'test01.md';
-//     return expect(getFilesMD(path)).resolves.toBe('.md');
-//   });
+describe('getFilesMD index.js', () => {
+  it('Debe resolver con la lista de archivos Markdown dentro del directorio', () => {
+    const route = 'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\Prueba test02';
+    const filePath = 'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\Prueba test02';
 
-//   it('Debe rechazar si no hay archivos Markdown dentro del directorio', () => {
-//     const path = 'Prueba test01';
-//     return expect(getFilesMD(path)).rejects.toBe(false);
-//   });
-// });
+    // Mock de fs.readdir para devolver archivos específicos
+    jest.spyOn(fs, 'readdir').mockImplementation((route, callback) => {
+      const files = ['test01.md', 'test02.md', 'test03.md'];
+      callback(null, files);
+    });
+
+    const expected = [
+      'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\Prueba test02\\test01.md',
+      'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\Prueba test02\\test02.md',
+      'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\Prueba test02\\test03.md'
+    ];
+
+    return expect(getFilesMD(route, filePath)).resolves.toEqual(expected);
+  });
+
+  it('Debe rechazar si no hay archivos Markdown dentro del directorio', () => {
+    const route = 'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\Prueba test02';
+    const filePath = 'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\Prueba test02';
+
+    // Mock de fs.readdir para devolver archivos específicos
+    jest.spyOn(fs, 'readdir').mockImplementation((route, callback) => {
+      const files = ['test01.js'];
+      callback(null, files);
+    });
+
+    return expect(getFilesMD(route, filePath)).rejects.toBe(false);
+  });
+
+  it('Debe rechazar con el error proporcionado si ocurre un error al leer el directorio', () => {
+    const route = 'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\Prueba test02';
+
+    // Mock de fs.readdir para devolver archivos específicos
+    jest.spyOn(fs, 'readdir').mockImplementation((route, callback) => {
+      const err = 'El directorio no contiene archivos Markdown';
+      callback(err);
+    });
+
+    return expect(getFilesMD(route)).rejects.toBe('El directorio no contiene archivos Markdown');
+  });
+});
+
+
+describe('thereAreLinks index.js', () => {
+  it('Debe resolver con los enlaces encontrados en un archivo', () => {
+    const route = 'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\test01.md'
+
+    // Mock de fs.readFile para devolver un contenido específico
+    jest.spyOn(fs, 'readFile').mockImplementation((route, options, callback) => {
+      const data = 'prueba1 ![banner](https://www.example.com/404)';
+      callback(null, data);
+    });
+
+    const expected = [
+      {
+        href: 'https://www.example.com/404',
+        text: 'banner',
+        file: 'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\test01.md',
+      }
+    ]
+
+    return expect(thereAreLinks(route)).resolves.toEqual(expected);
+  });
+
+  it('Debe rechazar si el archivo no contiene enlaces', () => {
+    const route = 'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\Prueba test02\\test02.md'
+
+    // Mock de fs.readFile para devolver un contenido específico
+    jest.spyOn(fs, 'readFile').mockImplementation((route, options, callback) => {
+      const data = 'Texto de prueba';
+      callback(null, data);
+    });
+
+    return expect(thereAreLinks(route)).rejects.toBe(`El archivo ${route} no contiene enlaces`);
+  });
+});
+
+describe('validateLink index.js', () => {
+  it('Debe resolver con el resultado correcto si la petición es exitosa', () => {
+    const link = {
+      href:'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\test02.md',
+      text:'banner',
+      file:'https://camo.githubusercontent.com/cb3d8a54bb69b30003dd51290d740c041e812df4d5dd2c45c3d1bd7a8e74e391/68747470733a2f2f696b2e696d6167656b69742e696f2f6a6f796365517565727562696e6f2f706572736f6e6167656d5f4d4c62567679624d62372e676966'
+    }
+
+    // Mock de axios.get
+    jest.spyOn(axios, 'get').mockResolvedValueOnce({ status: 200, statusText: 'OK' });
+
+    const expected = {
+      href:'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\test02.md',
+      text:'banner',
+      file:'https://camo.githubusercontent.com/cb3d8a54bb69b30003dd51290d740c041e812df4d5dd2c45c3d1bd7a8e74e391/68747470733a2f2f696b2e696d6167656b69742e696f2f6a6f796365517565727562696e6f2f706572736f6e6167656d5f4d4c62567679624d62372e676966',
+      status: 200,
+      ok: 'OK'
+    }
+
+    return expect(validateLink(link)).resolves.toEqual(expected);
+  });
+
+  it('Debe resolver con el resultado correcto si la petición falla', () => {
+    const link = {
+      href:'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\test01.md',
+      text:'banner',
+      file:'https://www.example.com/404'
+    }
+
+    // Mock de axios.get
+    jest.spyOn(axios, 'get').mockResolvedValueOnce({ status: 404, statusText: 'fail' });
+
+    const expected = {
+      href:'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\test01.md',
+      text:'banner',
+      file:'https://www.example.com/404',
+      status: 404,
+      ok: 'fail'
+    }
+
+    return expect(validateLink(link)).resolves.toEqual(expected);
+  });
+});

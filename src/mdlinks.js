@@ -108,11 +108,11 @@ module.exports = mdLinks;
 // node src\mdlinks.js
 // node src\mdlinks.js 'Prueba test02'
 // node src\mdlinks.js 'Prueba test02' --validate
-// node src\mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/index.js
-// node src\mdlinks.js index.js
+// node src\mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/package.json
+// node src\mdlinks.js package.json
 // node src\mdlinks.js index.js12
 // node src\mdlinks.js README.md
-// node src\mdlinks.js test.md
+// node src\mdlinks.js test01.md
 
 // CONTIENE MD
 // node src\mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/
