@@ -1,4 +1,4 @@
-const mdLinks = require('../mdlinks');
+const mdLinks = require('../src/mdlinks');
 
 
 describe('Rechazar mdLinks', () => {
@@ -16,7 +16,7 @@ describe('Rechazar mdLinks', () => {
   });
 
   it('Rechazar si el archivo no es markdown', () => {
-    return mdLinks('index.js').catch((err) => {
+    return mdLinks('Prueba test01/test01.js').catch((err) => {
       expect(err).toBe('El archivo no es Markdown');
     })
   });
@@ -29,7 +29,6 @@ describe('Rechazar mdLinks', () => {
 
   it('Rechazar si el archivo no contiene enlaces', () => {
     const filePath = 'C:/Users/x_liz/Documents/GitHub/DEV006-md-links/Prueba test02.md';
-    const fileValidation = '--validate';
 
     return mdLinks(filePath, { validate: true })
       .catch((err) => {
