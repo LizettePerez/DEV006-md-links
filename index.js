@@ -2,8 +2,8 @@ const path = require('path');
 const fs = require('fs');
 const axios = require('axios');
 
+
 const filePath = process.argv[2];
-const fileValidation = process.argv[3];
 
 const isAbsolute = (route) => {
   return path.isAbsolute(route)
@@ -110,7 +110,6 @@ module.exports = {
   isFileMD,
   getFilesMD,
   thereAreLinks,
-  fileValidation,
   validateLink,
 }
 

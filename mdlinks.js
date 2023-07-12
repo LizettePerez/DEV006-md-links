@@ -6,12 +6,12 @@ const {
   isFileMD,
   getFilesMD,
   thereAreLinks,
-  fileValidation,
   validateLink,
 } = require('./index');
 
+const validateOption = process.argv[3] === '--validate';
 
-const mdLinks = (path, option) => {
+const mdLinks = (path, options = { validate: false }) => {
   return new Promise((resolve, reject) => {
     if (!path) {
       reject('No se proporcionó una ruta');
@@ -22,7 +22,7 @@ const mdLinks = (path, option) => {
     let absolutePath;
     absolutePath = isAbsolute(path) ? path : relativeToAbsolute(path);
 
-    //ruta existente
+    // ruta existente
     existPath(absolutePath)
       .then(() => {
         // Verificar si es archivo .md o directorio
@@ -31,13 +31,7 @@ const mdLinks = (path, option) => {
             if (fileExtension === '.md') {
               thereAreLinks(absolutePath)
                 .then((links) => {
-                  if (
-                    option === 'validate' ||
-                    option === 'v' ||
-                    option === 'V' ||
-                    option === 'Validate' ||
-                    option === 'VALIDATE'
-                  ) {
+                  if (options.validate) {
                     const linkPromises = links.map((link) => {
                       return validateLink(link);
                     });
@@ -62,13 +56,7 @@ const mdLinks = (path, option) => {
                   const promises = mdFiles.map((file) => {
                     return thereAreLinks(file)
                       .then((links) => {
-                        if (
-                          option === 'validate' ||
-                          option === 'v' ||
-                          option === 'V' ||
-                          option === 'Validate' ||
-                          option === 'VALIDATE'
-                        ) {
+                        if (options.validate) {
                           const linkPromises = links.map((link) => {
                             return validateLink(link);
                           });
@@ -105,7 +93,8 @@ const mdLinks = (path, option) => {
   });
 };
 
-mdLinks(filePath, fileValidation)
+
+mdLinks(filePath, { validate: validateOption })
   .then((result) => {
     console.log(result);
   })
@@ -113,7 +102,7 @@ mdLinks(filePath, fileValidation)
     console.log(err);
   });
 
-  module.exports = mdLinks;
+module.exports = mdLinks;
 
 // node mdlinks.js
 // node mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/index.js
