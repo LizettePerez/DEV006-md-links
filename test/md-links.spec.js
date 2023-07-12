@@ -1,8 +1,20 @@
 const mdLinks = require('../src/mdlinks');
+const path = require('path');
+const fs = require('fs');
+const axios = require('axios');
+
+const {
+  isAbsolute,
+  relativeToAbsolute,
+  existPath,
+  isFileMD,
+  getFilesMD,
+  thereAreLinks,
+  validateLink,
+} = require('../src/index');
 
 
-describe('Rechazar mdLinks', () => {
-
+describe('Rechazar mdLinks.js', () => {
   it('Rechazar si no se proporciona una ruta', () => {
     return mdLinks('').catch((err) => {
       expect(err).toBe('No se proporcionó una ruta');
@@ -29,21 +41,17 @@ describe('Rechazar mdLinks', () => {
 
   it('Rechazar si el archivo no contiene enlaces', () => {
     const filePath = 'C:/Users/x_liz/Documents/GitHub/DEV006-md-links/Prueba test02.md';
-
     return mdLinks(filePath, { validate: true })
       .catch((err) => {
         expect(err).toBe(`El archivo ${filePath} no contiene enlaces`);
     });
   });
-
 });
 
 
-describe('Archivos mdLinks', () => {
-
+describe('Archivos mdLinks.js', () => {
   it('Devuelve los enlaces de un archivo markdown', () => {
     const filePath = 'test01.md';
-
     return mdLinks(filePath)
     .then((links) => {
       expect(links).toEqual([
@@ -58,7 +66,6 @@ describe('Archivos mdLinks', () => {
 
   it('Devuelve los enlaces validados de un archivo markdown', () => {
     const filePath = 'test01.md';
-  
     return mdLinks(filePath, { validate: true })
       .then((links) => {
         expect(links).toStrictEqual([
@@ -72,16 +79,12 @@ describe('Archivos mdLinks', () => {
         ]);
       });
   });
-  
-
 });
 
 
-describe('Directorio mdLinks', () => {
-
+describe('Directorio mdLinks.js', () => {
   it('Devuelve los enlaces en un markdown de un directorio', () => {
     const filePath = 'Prueba test02';
-
     return mdLinks(filePath)
     .then((links) => {
       expect(links).toEqual([
@@ -101,7 +104,6 @@ describe('Directorio mdLinks', () => {
 
   it('Devuelve los enlaces validados en un markdown de un directorio', () => {
     const filePath = 'Prueba test02';
-
     return mdLinks(filePath, { validate: true })
     .then((links) => {
       expect(links).toStrictEqual([
@@ -122,5 +124,77 @@ describe('Directorio mdLinks', () => {
       ]);
     })
   });
-
 });
+
+
+describe('isAbsolute index.js', () => {
+  it('Debe retornar true si es una ruta absoluta', () => {
+    const path = 'C:/Users/x_liz/Documents/GitHub/DEV006-md-links/Prueba test01';
+    const result = isAbsolute(path);
+    expect(result).toBe(true);
+  });
+
+  it('Debe retornar false si es una ruta relativa', () => {
+    const path = 'Prueba test01';
+    const result = isAbsolute(path);
+    expect(result).toBe(false);
+  });
+});
+
+
+describe('relativeToAbsolute index.js', () => {
+  it('Debe convertir una ruta relativa a ruta absoluta', () => {
+    const path = 'Prueba test01';
+    const result = relativeToAbsolute(path);
+    expect(result).toBe('C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\Prueba test01');
+  });
+});
+
+
+describe('existPath index.js', () => {
+  it('Debe resolver true si la ruta existe', () => {
+    const path = 'Prueba test01';
+    return expect(existPath(path)).resolves.toBe(true);
+  });
+
+  it('Debe resolver false si la ruta no existe', () => {
+    const path = 'Prueba test011212';
+    return expect(existPath(path)).rejects.toBe(false);
+  });
+});
+
+
+describe('isFileMD index.js', () => {
+  it('Debe resolver con la extensión del archivo si es un archivo Markdown', () => {
+    const path = 'test01.md';
+    return expect(isFileMD(path)).resolves.toBe('.md');
+  });
+
+  it('Debe resolver con false si es un directorio', () => {
+    const path = 'Prueba test01';
+    return expect(isFileMD(path)).resolves.toBe(false);
+  });
+
+  it('Debe rechazar con un mensaje de error si no es un archivo Markdown', () => {
+    const path = 'package.json';
+    return expect(isFileMD(path)).rejects.toBe('El archivo no es Markdown');
+  });
+
+  it('Debe rechazar si la ruta no existe', () => {
+    const route = 'Prueba test011212';
+    return expect(isFileMD(route)).rejects.toThrow();
+  });
+});
+
+
+// describe('getFilesMD index.js', () => {
+//   it('Debe resolver con la lista de archivos Markdown dentro del directorio', () => {
+//     const path = 'test01.md';
+//     return expect(getFilesMD(path)).resolves.toBe('.md');
+//   });
+
+//   it('Debe rechazar si no hay archivos Markdown dentro del directorio', () => {
+//     const path = 'Prueba test01';
+//     return expect(getFilesMD(path)).rejects.toBe(false);
+//   });
+// });

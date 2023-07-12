@@ -104,15 +104,18 @@ mdLinks(filePath, { validate: validateOption })
 
 module.exports = mdLinks;
 
-// node mdlinks.js
-// node mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/index.js
-// node mdlinks.js index.js
-// node mdlinks.js index.js12
-// node mdlinks.js README.md
-// node mdlinks.js test.md
+
+// node src\mdlinks.js
+// node src\mdlinks.js 'Prueba test02'
+// node src\mdlinks.js 'Prueba test02' --validate
+// node src\mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/index.js
+// node src\mdlinks.js index.js
+// node src\mdlinks.js index.js12
+// node src\mdlinks.js README.md
+// node src\mdlinks.js test.md
 
 // CONTIENE MD
-// node mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/
+// node src\mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/
 
 // NO CONTIENE MD
-// node mdlinks.js C:/Users/x_liz/Documents/GitHub/Challenge-Oracle-One
+// node src\mdlinks.js C:/Users/x_liz/Documents/GitHub/Challenge-Oracle-One
