@@ -6,12 +6,12 @@ const {
   isFileMD,
   getFilesMD,
   thereAreLinks,
-  fileValidation,
   validateLink,
 } = require('./index');
 
+const validateOption = process.argv[3] === '--validate';
 
-const mdLinks = (path, option) => {
+const mdLinks = (path, options = { validate: false }) => {
   return new Promise((resolve, reject) => {
     if (!path) {
       reject('No se proporcionó una ruta');
@@ -22,7 +22,7 @@ const mdLinks = (path, option) => {
     let absolutePath;
     absolutePath = isAbsolute(path) ? path : relativeToAbsolute(path);
 
-    //ruta existente
+    // ruta existente
     existPath(absolutePath)
       .then(() => {
         // Verificar si es archivo .md o directorio
@@ -31,13 +31,7 @@ const mdLinks = (path, option) => {
             if (fileExtension === '.md') {
               thereAreLinks(absolutePath)
                 .then((links) => {
-                  if (
-                    option === 'validate' ||
-                    option === 'v' ||
-                    option === 'V' ||
-                    option === 'Validate' ||
-                    option === 'VALIDATE'
-                  ) {
+                  if (options.validate) {
                     const linkPromises = links.map((link) => {
                       return validateLink(link);
                     });
@@ -62,13 +56,7 @@ const mdLinks = (path, option) => {
                   const promises = mdFiles.map((file) => {
                     return thereAreLinks(file)
                       .then((links) => {
-                        if (
-                          option === 'validate' ||
-                          option === 'v' ||
-                          option === 'V' ||
-                          option === 'Validate' ||
-                          option === 'VALIDATE'
-                        ) {
+                        if (options.validate) {
                           const linkPromises = links.map((link) => {
                             return validateLink(link);
                           });
@@ -105,7 +93,8 @@ const mdLinks = (path, option) => {
   });
 };
 
-mdLinks(filePath, fileValidation)
+
+mdLinks(filePath, { validate: validateOption })
   .then((result) => {
     console.log(result);
   })
@@ -113,17 +102,20 @@ mdLinks(filePath, fileValidation)
     console.log(err);
   });
 
-  module.exports = mdLinks;
+module.exports = mdLinks;
 
-// node mdlinks.js
-// node mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/index.js
-// node mdlinks.js index.js
-// node mdlinks.js index.js12
-// node mdlinks.js README.md
-// node mdlinks.js test.md
+
+// node src\mdlinks.js
+// node src\mdlinks.js 'Prueba test02'
+// node src\mdlinks.js 'Prueba test02' --validate
+// node src\mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/index.js
+// node src\mdlinks.js index.js
+// node src\mdlinks.js index.js12
+// node src\mdlinks.js README.md
+// node src\mdlinks.js test.md
 
 // CONTIENE MD
-// node mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/
+// node src\mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/
 
 // NO CONTIENE MD
-// node mdlinks.js C:/Users/x_liz/Documents/GitHub/Challenge-Oracle-One
+// node src\mdlinks.js C:/Users/x_liz/Documents/GitHub/Challenge-Oracle-One
