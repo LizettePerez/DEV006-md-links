@@ -29,9 +29,9 @@ describe('Rechazar mdLinks', () => {
 
   it('Rechazar si el archivo no contiene enlaces', () => {
     const filePath = 'C:/Users/x_liz/Documents/GitHub/DEV006-md-links/Prueba test02.md';
-    const fileValidation = 'validate';
+    const fileValidation = '--validate';
 
-    return mdLinks(filePath, fileValidation)
+    return mdLinks(filePath, { validate: true })
       .catch((err) => {
         expect(err).toBe(`El archivo ${filePath} no contiene enlaces`);
     });
@@ -59,21 +59,21 @@ describe('Archivos mdLinks', () => {
 
   it('Devuelve los enlaces validados de un archivo markdown', () => {
     const filePath = 'test01.md';
-    const fileValidation = 'v';
-
-    return mdLinks(filePath,fileValidation)
-    .then((links) => {
-      expect(links).toEqual([
-        {
-          href: 'https://www.example.com/404',
-          text: 'banner',
-          file: 'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\test01.md',
-          status: 404,
-          ok: 'fail'
-        }
-      ]);
-    })
+  
+    return mdLinks(filePath, { validate: true })
+      .then((links) => {
+        expect(links).toStrictEqual([
+          {
+            href: 'https://www.example.com/404',
+            text: 'banner',
+            file: 'C:\\Users\\x_liz\\Documents\\GitHub\\DEV006-md-links\\test01.md',
+            status: 404,
+            ok: 'fail'
+          }
+        ]);
+      });
   });
+  
 
 });
 
@@ -102,11 +102,10 @@ describe('Directorio mdLinks', () => {
 
   it('Devuelve los enlaces validados en un markdown de un directorio', () => {
     const filePath = 'Prueba test02';
-    const fileValidation = 'V';
 
-    return mdLinks(filePath,fileValidation)
+    return mdLinks(filePath, { validate: true })
     .then((links) => {
-      expect(links).toEqual([
+      expect(links).toStrictEqual([
         {
           href: 'https://www.example.com/404',
           text: 'banner',
