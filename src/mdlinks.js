@@ -72,7 +72,11 @@ const mdLinks = (path, options = { validate: false }) => {
                   Promise.all(promises)
                     .then((result) => {
                       const allLinks = result.flat();
-                      resolve(allLinks);
+                      if (allLinks.length === 0) {
+                        reject('El directorio no contiene archivos Markdown');
+                      } else {
+                        resolve(allLinks);
+                      }
                     })
                     .catch((err) => {
                       reject(err);
@@ -108,14 +112,14 @@ module.exports = mdLinks;
 // node src\mdlinks.js
 // node src\mdlinks.js 'Prueba test02'
 // node src\mdlinks.js 'Prueba test02' --validate
-// node src\mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/package.json
+// node src\mdlinks.js C:\Users\x_liz\Documents\GitHub\md-links\package.json
 // node src\mdlinks.js package.json
 // node src\mdlinks.js index.js12
 // node src\mdlinks.js README.md
 // node src\mdlinks.js test01.md
 
 // CONTIENE MD
-// node src\mdlinks.js C:/Users/x_liz/Documents/GitHub/DEV006-md-links/
+// node src\mdlinks.js C:\Users\x_liz\Documents\GitHub\md-links
 
 // NO CONTIENE MD
-// node src\mdlinks.js C:/Users/x_liz/Documents/GitHub/Challenge-Oracle-One
+// node src\mdlinks.js C:\Users\x_liz\Documents\GitHub\Challenge-Oracle-One
